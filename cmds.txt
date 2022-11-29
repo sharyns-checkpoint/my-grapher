@@ -1,1 +1,3 @@
 ssh -p 29418 sharyns@perkins.checkpoint.com gerrit query owner:sharyns@checkpoint.com status:merged --format json > merged_issues.json
+Remember removing last, unmatching line!
+
