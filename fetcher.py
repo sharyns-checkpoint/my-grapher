@@ -62,8 +62,7 @@ def fix_file(filename: str, newname) -> None:
     with open(newname, 'w') as of:
         of.writelines(newlines)
 
-def main():
-    username = sys.argv[1]
+def main(username):
     cmd = gen_cmd(username)
 
     print('Fetching data')
@@ -77,20 +76,8 @@ def main():
 
     print('Began pre-processing')
     df = preprocess(newname)
-    df.to_csv('result.json')  # obviously, temp
-
-    print('Began processing')
-    created_df = df[['createdOn', 'number']].groupby('createdOn').size().to_frame()
-
-    # fix names
-    created_df.head()
-    #created_df['number'] = created_df.index
-    #updated_df.rename(columns={'lastUpdate': 'updateDate'})
-    #updated_df['number'] = updated_df.index
-
-    created_df.to_csv('temp.json')
-    #print(created_df)
-    #print(updated_df.info())
+    df.to_csv(username + '.csv')  # obviously, temp
 
 if __name__ == '__main__':
+    username = sys.argv[1]
     main()
