@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import datetime
 import os
 
@@ -28,10 +29,20 @@ def preprocess(input_name: str) -> pd.DataFrame:
             df.head()
             print('All done')
 
-            df = df[['topic', 'number', 'createdOn', 'lastUpdated']]  # filter columns
-            print(df[['createdOn', 'lastUpdated']])
-            df['createdOn'] = df['createdOn'].astype(int).apply(datetime.datetime.fromtimestamp)
+            df = df[['topic', 'number', 'lastUpdated']]  # filter columns
+            df.reset_index()  # get rid of weird index
+
+            # convert unix epochs
+            #df['createdOn'] = df['createdOn'].astype(int).apply(datetime.datetime.fromtimestamp)
             df['lastUpdated'] = df['lastUpdated'].astype(int).apply(datetime.datetime.fromtimestamp)
+
+            # convert to just date
+            #df['createdOn'] = pd.to_datetime(df['createdOn']).dt.date
+            df['lastUpdated'] = pd.to_datetime(df['lastUpdated']).dt.date
+
+            # temp - test
+            #print(df[['createdOn', 'lastUpdated']])
+
             return df
     except Exception as ex:
         print('Error while processing file: ' + str(ex))
@@ -66,9 +77,20 @@ def main():
 
     print('Began pre-processing')
     df = preprocess(newname)
-    df.head()
-    df.to_csv('temp.json')  # obviously, temp
+    df.to_csv('result.json')  # obviously, temp
 
+    print('Began processing')
+    created_df = df[['createdOn', 'number']].groupby('createdOn').size().to_frame()
+
+    # fix names
+    created_df.head()
+    #created_df['number'] = created_df.index
+    #updated_df.rename(columns={'lastUpdate': 'updateDate'})
+    #updated_df['number'] = updated_df.index
+
+    created_df.to_csv('temp.json')
+    #print(created_df)
+    #print(updated_df.info())
 
 if __name__ == '__main__':
     main()
